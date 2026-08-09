@@ -2,7 +2,7 @@
 
 . src/workflow_handler.sh
 . src/media.sh
-. src/ssh.sh
+. src/http.sh
 . src/globals.sh
 
 # Single entry point behind the "seedbox" keyword, calling the sb-pull agent on
@@ -21,7 +21,7 @@ query="$2"
 # The transfer wizard (pick, classify, TMDb, transfer) arrives in a later phase.
 render_list() {
   local filter="$1" items
-  sb_call list || { get_json_results; return 0; }
+  sb_call GET /torrents "" || { get_json_results; return 0; }
   items="$(jq -c -f src/list-torrents.jq --arg q "$filter" \
     --arg icon_multi "$ICON_TV" --arg icon_file "$ICON_MOVIE" <<< "$SB_JSON" 2>/dev/null)"
   [[ -n "$items" ]] || items="[]"
@@ -36,7 +36,7 @@ render_list() {
 
 render_status() {
   local items
-  sb_call status || { get_json_results; return 0; }
+  sb_call GET /jobs "" || { get_json_results; return 0; }
   items="$(jq -c -f src/list-jobs.jq --arg icon "$ICON_STATUS" <<< "$SB_JSON" 2>/dev/null)"
   if [[ -z "$items" || "$items" == "[]" ]]; then
     add_result "" "" "No transfers" "Nothing is in flight" "$ICON_STATUS" "no"
@@ -53,7 +53,8 @@ if [[ "$mode" == "run" ]]; then
   payload="${query#"$action"}"
   payload="${payload# }"
   case "$action" in
-    set-host)   edit_host ;;
+    set-url)    edit_url ;;
+    set-token)  edit_token ;;
     autoupdate) set_autoupdate "$payload" ;;
     http://*|https://*) autoupdate_clear; [[ -f src/update.sh ]] && . src/update.sh "$query" ;;
     *) : ;;

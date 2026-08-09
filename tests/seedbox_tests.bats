@@ -1,6 +1,6 @@
 #!/usr/bin/env bats
 
-# Integration tests for src/seedbox.sh. ssh (to the sb-pull agent) and open are
+# Integration tests for src/seedbox.sh. curl (to the sb-ctrl API) and open are
 # mocked.
 
 setup() {
@@ -8,7 +8,7 @@ setup() {
   export alfred_workflow_data="$BATS_TEST_TMPDIR/data"
   export alfred_workflow_cache="$BATS_TEST_TMPDIR/cache"
   mkdir -p "$alfred_workflow_data" "$alfred_workflow_cache"
-  export SEEDBOX_SSH="$BATS_TEST_DIRNAME/mocks/bin/ssh"
+  export SEEDBOX_CURL="$BATS_TEST_DIRNAME/mocks/bin/curl"
   export OPEN_LOG="$BATS_TEST_TMPDIR/open.log"
 }
 
@@ -37,13 +37,13 @@ setup() {
 # --- reachability ----------------------------------------------------------
 
 @test "seedbox.sh: an unreachable server is reported" {
-  SEEDBOX_SSH_FAIL=1 run bash -c '. src/seedbox.sh list ""'
+  SEEDBOX_HTTP_FAIL=1 run bash -c '. src/seedbox.sh list ""'
   echo "$output" | jq -e '.items[0].title == "beaver unreachable"' >/dev/null
 }
 
-@test "seedbox.sh: an sb-pull error is surfaced" {
-  SEEDBOX_SB_ERR=1 run bash -c '. src/seedbox.sh list ""'
-  echo "$output" | jq -e '.items[0].title == "sb-pull error" and .items[0].subtitle == "boom"' >/dev/null
+@test "seedbox.sh: an API error is surfaced" {
+  SEEDBOX_HTTP_CODE=500 run bash -c '. src/seedbox.sh list ""'
+  echo "$output" | jq -e '.items[0].title == "sb-ctrl error (500)" and .items[0].subtitle == "boom"' >/dev/null
 }
 
 # --- status ----------------------------------------------------------------
@@ -54,7 +54,7 @@ setup() {
 }
 
 @test "seedbox.sh: status renders jobs" {
-  export SEEDBOX_STATUS_JSON='{"jobs":[{"id":"001","name":"Movie","state":"active","pct":42,"eta":"3m"}]}'
+  export SEEDBOX_JOBS_JSON='{"jobs":[{"id":"001","name":"Movie","state":"active","pct":42,"eta":"3m"}]}'
   run bash -c '. src/seedbox.sh list "status"'
   echo "$output" | jq -e '.items[0].title == "Movie"' >/dev/null
   echo "$output" | jq -e '.items[0].subtitle | contains("active") and contains("42%") and contains("ETA 3m")' >/dev/null
@@ -62,15 +62,21 @@ setup() {
 
 # --- globals ---------------------------------------------------------------
 
-@test "seedbox.sh: > lists the SSH host and update commands" {
+@test "seedbox.sh: > lists the API settings and update commands" {
   run bash -c '. src/seedbox.sh list ">"'
-  echo "$output" | jq -e '[.items[].title] | index("Set SSH host") != null and index("Check for updates") != null' >/dev/null
+  echo "$output" | jq -e '[.items[].title] | index("Set API URL") != null and index("Set API token") != null and index("Check for updates") != null' >/dev/null
 }
 
-@test "seedbox.sh: run set-host opens the host config" {
-  run bash -c '. src/seedbox.sh run "set-host"'
-  grep -q 'ssh-host' "$OPEN_LOG"
-  [ -f "$alfred_workflow_data/ssh-host" ]
+@test "seedbox.sh: run set-url opens the url config" {
+  run bash -c '. src/seedbox.sh run "set-url"'
+  grep -q 'api-url' "$OPEN_LOG"
+  [ -f "$alfred_workflow_data/api-url" ]
+}
+
+@test "seedbox.sh: run set-token opens the token config" {
+  run bash -c '. src/seedbox.sh run "set-token"'
+  grep -q 'api-token' "$OPEN_LOG"
+  [ -f "$alfred_workflow_data/api-token" ]
 }
 
 @test "seedbox.sh: autoupdate on writes the flag" {
