@@ -60,8 +60,8 @@ sb_curl() {
 # 0. On failure queues a single result: an unreachable server or an API error.
 # $1 method  $2 path  $3 data
 sb_call() {
-  local out rc code body msg
-  out="$(sb_curl "$1" "$2" "$3" 2>/dev/null)"
+  local method="$1" path="$2" data="$3" out rc code body msg
+  out="$(sb_curl "$method" "$path" "$data" 2>/dev/null)"
   rc=$?
   if [[ $rc -ne 0 ]]; then
     add_result "" "" "beaver unreachable" "Connect to VPN or LAN, then retry" "$ICON_OFFLINE" "no"
