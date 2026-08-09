@@ -10,8 +10,8 @@ def human($b):
 
 def matches($q; $name):
   ($q | ascii_downcase | split(" ") | map(select(length > 0))) as $w
-  | ($w | length) == 0
-  or ($name | ascii_downcase) as $n | all($w[]; . as $t | $n | contains($t));
+  | ($name | ascii_downcase) as $n
+  | ($w | length) == 0 or all($w[]; . as $t | $n | contains($t));
 
 (.items // [])
 | map(select(matches($q; .name)))
