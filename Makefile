@@ -1,6 +1,6 @@
 WORKFLOW    := Seedbox.alfredworkflow
 UPDATER_URL := https://github.com/grigoriev/alfred-workflow-updater/releases/latest/download/updater.tar.gz
-SCRIPTS     := src/seedbox.sh src/ssh.sh src/globals.sh src/cache.sh
+SCRIPTS     := src/seedbox.sh src/http.sh src/globals.sh src/cache.sh
 EXCLUDES    := '.git/*' '.github/*' '.gitignore' 'Makefile' '$(WORKFLOW)'
 
 .PHONY: all build updater verify-updater test lint icons clean

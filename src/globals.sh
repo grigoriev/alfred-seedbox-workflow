@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# Global commands behind "seedbox >": set the SSH host and updates. Server
-# settings (roots, perms, keys) live in sb-pull's config on the server.
+# Global commands behind "seedbox >": set the API URL and token, and updates.
+# Server settings (roots, perms, keys) live in sb-ctrl's config on the server.
 
 . src/media.sh
 . src/autoupdate.sh
-. src/ssh.sh
+. src/http.sh
 
 seedbox_lower() {
   local text="$1"
@@ -25,18 +25,29 @@ global_item() {
 
 globals_menu() {
   local filter="$1"
-  global_item "set ssh host" "$filter" "Set SSH host" "Current: $(ssh_host)" "set-host" "yes" "$ICON_GEAR" ""
+  global_item "set api url"   "$filter" "Set API URL"   "Current: $(api_base)" "set-url"   "yes" "$ICON_GEAR" ""
+  global_item "set api token" "$filter" "Set API token" "Bearer token for sb-ctrl" "set-token" "yes" "$ICON_GEAR" ""
   autoupdate_menu "$filter" "$ICON_UPDATE"
   get_json_results
   return 0
 }
 
-# Open the SSH-host config file in a text editor, seeding the default.
-edit_host() {
+# Open the API-URL config file in a text editor, seeding the default.
+edit_url() {
   local file
-  file="$(host_config)"
+  file="$(api_base_config)"
   mkdir -p "${alfred_workflow_data:-.}"
-  [[ -f "$file" ]] || printf '%s\n' "${SEEDBOX_SSH_HOST:-beaver.h.g7v.io}" > "$file"
+  [[ -f "$file" ]] || printf '%s\n' "${SEEDBOX_API_BASE:-https://beaver.h.g7v.io}" > "$file"
+  open -e "$file"
+  return 0
+}
+
+# Open the API-token config file in a text editor.
+edit_token() {
+  local file
+  file="$(api_token_config)"
+  mkdir -p "${alfred_workflow_data:-.}"
+  [[ -f "$file" ]] || printf '# Paste the sb-ctrl bearer token here\n' > "$file"
   open -e "$file"
   return 0
 }
