@@ -18,7 +18,9 @@ The full design is in [SPEC.md](SPEC.md).
 Type `seedbox`:
 
 - `seedbox` - list completed torrents on the seedbox, newest first,
-  type-to-filter by name.
+  type-to-filter by name. Enter on a torrent opens the **Send-to-Plex wizard**:
+  pick the TMDb match (movie / cartoon / series / cartoon-series is detected),
+  and Enter starts the transfer. A notification fires when it is queued.
 - `seedbox status` - transfer jobs (state, %, ETA).
 - `seedbox >` - settings: set the API URL and token, check for updates.
 

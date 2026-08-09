@@ -5,14 +5,19 @@ if [[ "$SEEDBOX_HTTP_FAIL" == "1" ]]; then
   echo "curl: (7) Failed to connect to host" >&2
   exit 7
 fi
+method="GET"; prev=""
+for a in "$@"; do [[ "$prev" == "-X" ]] && method="$a"; prev="$a"; done
 url="${*: -1}"
 code="${SEEDBOX_HTTP_CODE:-200}"
 default_torrents='{"items":[{"hash":"H1","name":"Some.Movie.2024","size":2147483648,"is_multi":false,"base_rel":"files/Some.Movie.2024.mkv","finished":100},{"hash":"H2","name":"Some.Show.S01","size":10737418240,"is_multi":true,"base_rel":"files/Some.Show.S01","finished":200}]}'
+default_search='{"guess":{"media":"movie","query":"Some Movie","year":"2024"},"candidates":[{"tmdb_id":1,"media":"movie","title":"Some Movie","original_title":"Some Movie","year":"2024","overview":"a film","is_animation":false,"kind":"movie"}]}'
 case "$url" in
   */torrents) body="${SEEDBOX_TORRENTS_JSON:-$default_torrents}" ;;
-  */jobs)     body="${SEEDBOX_JOBS_JSON:-{\"jobs\":[]}}" ;;
-  */jobs/*)   body='{"id":"J1","state":"active"}' ;;
-  *)          body='{}' ;;
+  */search*)  body="${SEEDBOX_SEARCH_JSON:-$default_search}" ;;
+  */jobs)
+    if [[ "$method" == "POST" ]]; then body="${SEEDBOX_JOB_JSON:-{\"job_id\":\"J1\",\"launcher\":\"systemd\"}}"; else body="${SEEDBOX_JOBS_JSON:-{\"jobs\":[]}}"; fi ;;
+  */jobs/*) body='{"id":"J1","state":"active"}' ;;
+  *) body='{}' ;;
 esac
 if [[ "$code" != 2* ]]; then
   body="${SEEDBOX_ERR_JSON:-{\"detail\":\"boom\"}}"

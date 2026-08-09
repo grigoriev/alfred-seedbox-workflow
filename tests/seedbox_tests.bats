@@ -10,6 +10,7 @@ setup() {
   mkdir -p "$alfred_workflow_data" "$alfred_workflow_cache"
   export SEEDBOX_CURL="$BATS_TEST_DIRNAME/mocks/bin/curl"
   export OPEN_LOG="$BATS_TEST_TMPDIR/open.log"
+  export OSASCRIPT_LOG="$BATS_TEST_TMPDIR/osa.log"
 }
 
 # --- list ------------------------------------------------------------------
@@ -27,6 +28,50 @@ setup() {
 @test "seedbox.sh: filters torrents by the query" {
   run bash -c '. src/seedbox.sh list "movie"'
   echo "$output" | jq -e '[.items[].title] == ["Some.Movie.2024"]' >/dev/null
+}
+
+@test "seedbox.sh: a torrent drills into the wizard" {
+  run bash -c '. src/seedbox.sh list ""'
+  echo "$output" | jq -e '.items[0].arg == "wizard H1" and .items[0].autocomplete == "@H1 "' >/dev/null
+}
+
+# --- wizard: candidates ----------------------------------------------------
+
+@test "seedbox.sh: candidates step lists TMDb matches" {
+  run bash -c '. src/seedbox.sh list "@H1 "'
+  echo "$output" | jq -e '.items[0].title == "Some Movie (2024)"' >/dev/null
+  echo "$output" | jq -e '.items[0].arg == "start H1 movie Some Movie (2024)"' >/dev/null
+  echo "$output" | jq -e '.items[0].subtitle | startswith("Movie")' >/dev/null
+}
+
+@test "seedbox.sh: candidates step reports an unknown torrent" {
+  export SEEDBOX_TORRENTS_JSON='{"items":[]}'
+  run bash -c '. src/seedbox.sh list "@H1 "'
+  echo "$output" | jq -e '.items[0].title == "Torrent not found"' >/dev/null
+}
+
+@test "seedbox.sh: candidates step reports no TMDb matches" {
+  export SEEDBOX_SEARCH_JSON='{"guess":{},"candidates":[]}'
+  run bash -c '. src/seedbox.sh list "@H1 "'
+  echo "$output" | jq -e '.items[0].title == "No TMDb matches"' >/dev/null
+}
+
+# --- wizard: run actions ---------------------------------------------------
+
+@test "seedbox.sh: wizard action reopens Alfred at the candidates" {
+  run bash -c '. src/seedbox.sh run "wizard H1"'
+  grep -q 'seedbox @H1' "$OSASCRIPT_LOG"
+}
+
+@test "seedbox.sh: start posts the job, notifies, and shows status" {
+  run bash -c '. src/seedbox.sh run "start H1 movie Some Movie (2024)"'
+  grep -q 'display notification' "$OSASCRIPT_LOG"
+  grep -q 'seedbox status' "$OSASCRIPT_LOG"
+}
+
+@test "seedbox.sh: start on an API error notifies failure" {
+  SEEDBOX_HTTP_CODE=500 run bash -c '. src/seedbox.sh run "start H1 movie Some Movie (2024)"'
+  grep -q 'Failed to start' "$OSASCRIPT_LOG"
 }
 
 @test "seedbox.sh: no match yields an empty-state item" {
