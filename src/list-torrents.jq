@@ -1,5 +1,5 @@
-# Render "sb-pull list" output into Alfred items, filtered by the query. Items
-# are non-actionable for now; the Send-to-Plex wizard arrives in a later phase.
+# Render "GET /torrents" into Alfred items, filtered by the query. Enter drills
+# into the Send-to-Plex wizard for that torrent.
 #
 # Args: --arg q, --arg icon_multi, --arg icon_file
 
@@ -18,7 +18,9 @@ def matches($q; $name):
 | map({
     uid: .hash,
     title: .name,
-    subtitle: (human(.size) + "   ·   " + (if .is_multi then "folder" else "file" end)),
-    valid: false,
+    subtitle: (human(.size) + "   ·   " + (if .is_multi then "folder" else "file" end) + "   ·   ↵ send to Plex"),
+    arg: ("wizard " + .hash),
+    autocomplete: ("@" + .hash + " "),
+    valid: true,
     icon: { path: (if .is_multi then $icon_multi else $icon_file end) }
   })
