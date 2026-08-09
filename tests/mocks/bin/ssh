@@ -1,0 +1,29 @@
+#!/bin/bash
+# Mock ssh for tests. Finds the sb-pull subcommand in argv and emits canned JSON.
+# SEEDBOX_SSH_FAIL=1 -> unreachable; SEEDBOX_SB_ERR=1 -> sb-pull JSON error.
+if [[ "$SEEDBOX_SSH_FAIL" == "1" ]]; then
+  echo "ssh: connect to host: Operation timed out" >&2
+  exit 255
+fi
+sub=""; found=0
+for a in "$@"; do
+  if [[ $found -eq 1 ]]; then sub="$a"; break; fi
+  [[ "$a" == "sb-pull" ]] && found=1
+done
+if [[ "$SEEDBOX_SB_ERR" == "1" ]]; then
+  echo '{"error":"boom"}' >&2
+  exit 1
+fi
+case "$sub" in
+  list)
+    if [[ -n "$SEEDBOX_LIST_FIXTURE" && -f "$SEEDBOX_LIST_FIXTURE" ]]; then
+      cat "$SEEDBOX_LIST_FIXTURE"
+    else
+      printf '%s' '{"items":[{"hash":"H1","name":"Some.Movie.2024","size":2147483648,"is_multi":false,"base_rel":"files/Some.Movie.2024.mkv","finished":100},{"hash":"H2","name":"Some.Show.S01","size":10737418240,"is_multi":true,"base_rel":"files/Some.Show.S01","finished":200}]}'
+    fi
+    ;;
+  status) printf '%s' "${SEEDBOX_STATUS_JSON:-{\"jobs\":[]}}" ;;
+  config) printf '%s' '{"ssh_host":"beaver"}' ;;
+  *) : ;;
+esac
+exit 0
