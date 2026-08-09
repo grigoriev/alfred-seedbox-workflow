@@ -5,7 +5,7 @@ that drives the `sb-ctrl` backend on Ubuntu `beaver.h.g7v.io` over its **REST
 API** and renders the JSON. All logic, metadata, and secrets live in `sb-ctrl`
 (see `sb-ctrl/SPEC.md`); this workflow holds only the API URL and a token.
 
-Status: plan and P0 implemented.
+Status: implemented (list, wizard, status, settings).
 
 ---
 
@@ -47,12 +47,18 @@ Keyword `seedbox`:
 
 ---
 
-## 4. The Send-to-Plex wizard (later phase)
+## 4. The Send-to-Plex wizard
 
 A sequence of Script Filter states, each calling an API endpoint and
-autocompleting into the next: pick torrent → classify (from `GET /torrents` +
-the TMDb `search`) → confirm the TMDb match → preview (`POST /plan`) → on Enter
-`POST /jobs` to start the transfer, then hand off to `seedbox status`.
+autocompleting into the next:
+
+- `seedbox` → torrents (`GET /torrents`); Enter → `@<hash>`.
+- `@<hash>` → TMDb candidates (`GET /search`, rendered with the detected kind
+  and canonical `Name (Year)`).
+- Enter on a candidate → `POST /jobs` (collision overwrite), a macOS
+  notification, then a jump to `seedbox status`.
+
+A collision preview step (`POST /plan`) can be added later.
 
 ---
 
