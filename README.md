@@ -46,6 +46,7 @@ the API's JSON.
 
 ## Status
 
-Alpha. Phase P0 (list, status, settings, unreachable handling) over the REST API
-is implemented; the Send-to-Plex wizard (classify, TMDb, transfer) lands in
-later phases per SPEC.md.
+Beta. Implemented over the REST API: the torrent list, the Send-to-Plex wizard
+(TMDb match + transfer), the status view with notifications, settings, and
+unreachable handling. Requires the [sb-ctrl](https://github.com/grigoriev/sb-ctrl)
+backend deployed and reachable.
