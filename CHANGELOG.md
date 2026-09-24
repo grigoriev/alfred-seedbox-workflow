@@ -25,6 +25,7 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Run CI once per commit on a Renovate branch; a second push run blocked the automerge.
 - Point `SECURITY.md` to the advisory form of this repository.
+- Upload the files to the existing release on a rerun of the release workflow.
 
 Earlier releases are listed on the
 [GitHub releases page](https://github.com/grigoriev/alfred-seedbox-workflow/releases).
