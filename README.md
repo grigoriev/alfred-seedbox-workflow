@@ -6,7 +6,7 @@
 [![Release](https://img.shields.io/github/v/release/grigoriev/alfred-seedbox-workflow)](https://github.com/grigoriev/alfred-seedbox-workflow/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=grigoriev_alfred-seedbox-workflow&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=grigoriev_alfred-seedbox-workflow)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=grigoriev_alfred-seedbox-workflow&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=grigoriev_alfred-seedbox-workflow)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=grigoriev_alfred-seedbox-workflow&metric=coverage)](https://sonarcloud.io/summary/new_code?id=grigoriev_alfred-seedbox-workflow)
 
 The Mac front-end for the seedbox to Plex pipeline: a thin Alfred workflow that
@@ -15,6 +15,22 @@ API and renders the JSON. All logic and secrets live in sb-ctrl; this workflow
 holds only the API URL and a bearer token.
 
 The full design is in [SPEC.md](SPEC.md).
+
+## Install
+
+1. Open the [latest release](https://github.com/grigoriev/alfred-seedbox-workflow/releases/latest).
+2. Under **Assets**, download `Seedbox.alfredworkflow`.
+3. Double click the file to add it to Alfred.
+
+### Verify
+
+Each release carries `Seedbox.alfredworkflow.intoto.jsonl`, a signed build
+provenance bundle. Check that this repository's release workflow built the
+download:
+
+```sh
+gh attestation verify Seedbox.alfredworkflow --repo grigoriev/alfred-seedbox-workflow
+```
 
 ## Usage
 
@@ -54,15 +70,9 @@ Beta. Implemented over the REST API: the torrent list, the Send-to-Plex wizard
 unreachable handling. Requires the [sb-ctrl](https://github.com/grigoriev/sb-ctrl)
 backend deployed and reachable.
 
-## Verify
+## Contributing
 
-Each release carries `Seedbox.alfredworkflow.intoto.jsonl`, a signed build
-provenance bundle. Check that this repository's release workflow built the
-download:
-
-```sh
-gh attestation verify Seedbox.alfredworkflow --repo grigoriev/alfred-seedbox-workflow
-```
+Issues and pull requests are welcome, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Disclaimer
 
@@ -70,3 +80,7 @@ This workflow is provided "as is", without warranty of any kind, as the LICENSE 
 it at your own risk. Sergey Grigoriev is not liable for damage from its use, as far as the law
 allows. It is published free of charge, outside of any commercial offering, with no
 obligation to support it. Security reports are welcome, see SECURITY.md.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
