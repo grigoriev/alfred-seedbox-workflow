@@ -6,6 +6,13 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
+### Changed
+
+- The version bump moves the Unreleased entries of this changelog into a section for
+  the new version. The GitHub release takes its notes from that section.
+
+## [0.1.1] - 2026-09-24
+
 ### Security
 
 - Audit the workflows with actionlint and zizmor in the lint job.
@@ -27,6 +34,3 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Run CI once per commit on a Renovate branch; a second push run blocked the automerge.
 - Point `SECURITY.md` to the advisory form of this repository.
 - Upload the files to the existing release on a rerun of the release workflow.
-
-Earlier releases are listed on the
-[GitHub releases page](https://github.com/grigoriev/alfred-seedbox-workflow/releases).
