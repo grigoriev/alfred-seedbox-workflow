@@ -53,6 +53,16 @@ Beta. Implemented over the REST API: the torrent list, the Send-to-Plex wizard
 unreachable handling. Requires the [sb-ctrl](https://github.com/grigoriev/sb-ctrl)
 backend deployed and reachable.
 
+## Verify
+
+Each release carries `Seedbox.alfredworkflow.intoto.jsonl`, a signed build
+provenance bundle. Check that this repository's release workflow built the
+download:
+
+```sh
+gh attestation verify Seedbox.alfredworkflow --repo grigoriev/alfred-seedbox-workflow
+```
+
 ## Disclaimer
 
 This workflow is provided "as is", without warranty of any kind, as the LICENSE states. Use
