@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/grigoriev/alfred-seedbox-workflow/actions/workflows/ci.yml/badge.svg)](https://github.com/grigoriev/alfred-seedbox-workflow/actions/workflows/ci.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/grigoriev/alfred-seedbox-workflow/badge)](https://scorecard.dev/viewer/?uri=github.com/grigoriev/alfred-seedbox-workflow)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/14800/badge)](https://www.bestpractices.dev/projects/14800)
 [![Release](https://img.shields.io/github/v/release/grigoriev/alfred-seedbox-workflow)](https://github.com/grigoriev/alfred-seedbox-workflow/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
