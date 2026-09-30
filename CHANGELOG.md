@@ -14,6 +14,8 @@ The project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Security
 
 - The release verifies the provenance of the bundled updater, and the version bump pushes only `main`.
+- A torrent name with a double quote no longer breaks the notification or injects
+  AppleScript. The name reaches `osascript` as an argument.
 
 ## [0.1.1] - 2026-09-24
 

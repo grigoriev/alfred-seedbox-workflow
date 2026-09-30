@@ -29,10 +29,15 @@ APPLESCRIPT
   return 0
 }
 
-# Post a macOS notification.
+# Post a macOS notification. Title and message go in as arguments, never into
+# the script text, so a quote in a torrent name cannot break or inject AppleScript.
 notify() {
   local title="$1" message="$2"
-  osascript -e "display notification \"$message\" with title \"$title\"" >/dev/null 2>&1
+  osascript - "$title" "$message" >/dev/null 2>&1 <<'APPLESCRIPT'
+on run argv
+  display notification (item 2 of argv) with title (item 1 of argv)
+end run
+APPLESCRIPT
   return 0
 }
 

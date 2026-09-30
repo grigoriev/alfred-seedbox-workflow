@@ -69,6 +69,13 @@ setup() {
   grep -q 'seedbox status' "$OSASCRIPT_LOG"
 }
 
+@test "seedbox.sh: a quote in the name stays out of the AppleScript source" {
+  run bash -c '. src/seedbox.sh run "start H1 movie Bad \"Name"'
+  grep -q 'display notification (item 2 of argv)' "$OSASCRIPT_LOG"
+  grep -qF 'Transfer started: Bad "Name' "$OSASCRIPT_LOG"
+  ! grep -qF 'display notification "' "$OSASCRIPT_LOG"
+}
+
 @test "seedbox.sh: start on an API error notifies failure" {
   SEEDBOX_HTTP_CODE=500 run bash -c '. src/seedbox.sh run "start H1 movie Some Movie (2024)"'
   grep -q 'Failed to start' "$OSASCRIPT_LOG"
